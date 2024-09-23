@@ -1,4 +1,4 @@
-This is a small [Vintage Story](https://www.vintagestory.at) library to allow to patch patches. With this installed, a content mod can add a file of blockpatch patches at the asset location `config/blockpatchpatches.json`. Patches target all patched, either in `worldgen/blockpatches.json` or in the `worldgen/blockpatches` folder.
+This is a small [Vintage Story](https://www.vintagestory.at) library to allow to patch patches. With this installed, a content mod can add a file of blockpatch patches at the asset location `config/blockpatchpatches.json`. Patches target all blockpatches, either in `worldgen/blockpatches.json` or in the `worldgen/blockpatches` folder.
 
 The allowed format resembles very closely the blockpatch one, as seen in the example patch:
 ```json
