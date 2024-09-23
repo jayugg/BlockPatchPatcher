@@ -49,7 +49,8 @@ public class BBPCore : ModSystem
         {
             var blockPatchConfigAsset = api.Assets.Get("worldgen/blockpatches.json");
             var bpc = blockPatchConfigAsset.ToObject<BlockPatchConfig>();
-            PatchBlockPatches(bpc.Patches, out var anyPatch1);
+            int patchCount = 0;
+            PatchBlockPatches(bpc.Patches, ref patchCount, out var anyPatch1);
             if (anyPatch1)
             {
                 var output1 = JToken.FromObject(bpc).ToString();
@@ -59,30 +60,30 @@ public class BBPCore : ModSystem
             foreach (var blockPatchAsset in LoadPatchableBlockPatches(sapi))
             {
                 BlockPatch[] blockPatches = blockPatchAsset.ToObject<BlockPatch[]>();
-                PatchBlockPatches(blockPatches, out var anyPatch2);
+                PatchBlockPatches(blockPatches, ref patchCount, out var anyPatch2);
                 if (anyPatch2) continue;
                 var output2 = JToken.FromObject(blockPatches).ToString();
                 blockPatchAsset.Data = Encoding.UTF8.GetBytes(output2);
             }
+            Logger.Event("Finished patching " + patchCount + " block patches");
         }
     }
 
-    private void PatchBlockPatches(BlockPatch[] blockPatches, out bool anyPatch)
+    private void PatchBlockPatches(BlockPatch[] blockPatches, ref int patchCount, out bool anyPatch)
     {
+        anyPatch = false;
         foreach (var patch in blockPatches)
         {
             foreach (var blockPatchPatch in BlockPatchPatches)
             {
-                if (patch.blockCodes.Any(code => WildcardUtil.Match(blockPatchPatch?.Code, code.ToString())))
-                {
-                    anyPatch = true;
-                    //Logger.Warning($"Patch: {patch.blockCodes[0]} Op: {blockPatchPatch?.Op} Chance: {patch?.Chance},{blockPatchPatch?.Chance}");
-                    blockPatchPatch?.Patch(patch);
-                    //Logger.Warning($"AfterPatch: {patch.blockCodes[0]} Chance: {patch?.Chance}");
-                }
+                if (!patch.blockCodes.Any(code => WildcardUtil.Match(blockPatchPatch?.Code, code.ToString()))) continue;
+                //Logger.Warning($"Patch: {patch.blockCodes[0]} Op: {blockPatchPatch?.Op} Chance: {patch?.Chance},{blockPatchPatch?.Chance}");
+                blockPatchPatch?.Patch(patch);
+                //Logger.Warning($"AfterPatch: {patch.blockCodes[0]} Chance: {patch?.Chance}");
+                patchCount += 1;
+                anyPatch = true;
             }
         }
-        anyPatch = false;
     }
 }
 }
