@@ -26,4 +26,5 @@ Currently supported value types are:
 - Numerical values (`int`, `float`)
 - `NatFloat` (as an example, see "quantity" in the patch above)
 - Strings and lists of strings
+  
 Only numerical values support multiplication, string support addition and replacement, while the rest only support replacement. You can make multiple patches targeting the same code to get around this.
