@@ -23,8 +23,7 @@ The allowed format resembles very closely the blockpatch one, as seen in the exa
 All numerical values of a block patch can be patched using one of three operation types: `add`, `multiply`, `replace`. The first two will use the existing value dynamically, multiplying it or adding the value in the patch to it. `replace` will instead simply replace the value.
 
 Currently supported value types are:
-
-Numerical values (`int`, `float`)
-`NatFloat` (as an example, see "quantity" in the patch above)
-Strings and lists of strings
+- Numerical values (`int`, `float`)
+- `NatFloat` (as an example, see "quantity" in the patch above)
+- Strings and lists of strings
 Only numerical values support multiplication, string support addition and replacement, while the rest only support replacement. You can make multiple patches targeting the same code to get around this.
