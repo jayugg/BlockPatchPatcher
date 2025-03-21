@@ -20,5 +20,5 @@ riderModule.iml
 
 /Releases/
 
-.idea/.idea.BlockPatchPatcher/.idea/*.xml
+.idea/
 *.DS_Store
