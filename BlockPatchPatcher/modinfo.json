@@ -1,0 +1,12 @@
+{
+    "type": "code",
+    "modid": "blockpatchpatcher",
+    "name": "BlockPatchPatcher",
+    "authors": [ "jayu" ],
+    "side": "server",
+    "description": "Dynamic blockpatch patching",
+    "version": "1.1.0",
+    "dependencies": {
+        "game": ""
+    }
+}

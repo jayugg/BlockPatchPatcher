@@ -7,12 +7,8 @@ using Vintagestory.API.Common;
 using Vintagestory.API.Util;
 using Vintagestory.ServerMods.NoObf;
 
-[assembly: ModInfo(name: "BlockPatchPatcher", modID: "blockpatchpatcher", Side = "Server", Version = "1.0.0", Authors = new string[] { "jayugg" },
-    Description = "Dynamic blockpatch patching")]
-
-namespace BlockPatchPatcher
-{
-public class BBPCore : ModSystem
+namespace BlockPatchPatcher;
+public class BbpCore : ModSystem
 {
     public override double ExecuteOrder() => 0.6;
     public static ILogger Logger;
@@ -28,13 +24,13 @@ public class BBPCore : ModSystem
         if ((api.Side & EnumAppSide.Server) != 0) LoadBlockPatchPatches(api);
     }
 
-    public void LoadBlockPatchPatches(ICoreAPI api)
+    private void LoadBlockPatchPatches(ICoreAPI api)
     {
         Dictionary<AssetLocation, BlockPatchPatch[]> blockPatchPatchAssets = api.Assets.GetMany<BlockPatchPatch[]>(Logger,"config/blockpatchpatches.json");
         BlockPatchPatches = blockPatchPatchAssets.Values.SelectMany(val => val).ToArray();
     }
-    
-    public IAsset[] LoadPatchableBlockPatches(ICoreAPI api)
+
+    private IAsset[] LoadPatchableBlockPatches(ICoreAPI api)
     {
         List<AssetLocation> blockPatchAssets = api.Assets.GetLocations("worldgen/blockpatches/");
         var assets = blockPatchAssets.Select(val => api.Assets.Get(val)).ToList();
@@ -44,29 +40,27 @@ public class BBPCore : ModSystem
     public override void AssetsFinalize(ICoreAPI api)
     {
         base.AssetsFinalize(api);
-        
-        if (api is ICoreServerAPI sapi)
-        {
-            var blockPatchConfigAsset = api.Assets.Get("worldgen/blockpatches.json");
-            var bpc = blockPatchConfigAsset.ToObject<BlockPatchConfig>();
-            int patchCount = 0;
-            PatchBlockPatches(bpc.Patches, ref patchCount, out var anyPatch1);
-            if (anyPatch1)
-            {
-                var output1 = JToken.FromObject(bpc).ToString();
-                blockPatchConfigAsset.Data = Encoding.UTF8.GetBytes(output1);
-            }
 
-            foreach (var blockPatchAsset in LoadPatchableBlockPatches(sapi))
-            {
-                BlockPatch[] blockPatches = blockPatchAsset.ToObject<BlockPatch[]>();
-                PatchBlockPatches(blockPatches, ref patchCount, out var anyPatch2);
-                if (anyPatch2) continue;
-                var output2 = JToken.FromObject(blockPatches).ToString();
-                blockPatchAsset.Data = Encoding.UTF8.GetBytes(output2);
-            }
-            Logger.Event("Finished patching " + patchCount + " block patches");
+        if (api is not ICoreServerAPI sapi) return;
+        var blockPatchConfigAsset = api.Assets.Get("worldgen/blockpatches.json");
+        var bpc = blockPatchConfigAsset.ToObject<BlockPatchConfig>();
+        int patchCount = 0;
+        PatchBlockPatches(bpc.Patches, ref patchCount, out var anyPatch1);
+        if (anyPatch1)
+        {
+            var output1 = JToken.FromObject(bpc).ToString();
+            blockPatchConfigAsset.Data = Encoding.UTF8.GetBytes(output1);
         }
+
+        foreach (var blockPatchAsset in LoadPatchableBlockPatches(sapi))
+        {
+            BlockPatch[] blockPatches = blockPatchAsset.ToObject<BlockPatch[]>();
+            PatchBlockPatches(blockPatches, ref patchCount, out var anyPatch2);
+            if (anyPatch2) continue;
+            var output2 = JToken.FromObject(blockPatches).ToString();
+            blockPatchAsset.Data = Encoding.UTF8.GetBytes(output2);
+        }
+        Logger.Event("Finished patching " + patchCount + " block patches");
     }
 
     private void PatchBlockPatches(BlockPatch[] blockPatches, ref int patchCount, out bool anyPatch)
@@ -85,5 +79,10 @@ public class BBPCore : ModSystem
             }
         }
     }
-}
+
+    public override void Dispose()
+    {
+        base.Dispose();
+        Logger = null;
+    }
 }

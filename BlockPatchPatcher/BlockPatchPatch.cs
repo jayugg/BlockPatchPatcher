@@ -6,7 +6,6 @@ using Newtonsoft.Json;
 using Vintagestory.API.MathTools;
 using Vintagestory.ServerMods;
 using Vintagestory.ServerMods.NoObf;
-using wildercraftberries.PatchSystem;
 
 namespace BlockPatchPatcher;
 

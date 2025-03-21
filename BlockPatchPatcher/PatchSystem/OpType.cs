@@ -1,4 +1,4 @@
-namespace wildercraftberries.PatchSystem;
+namespace BlockPatchPatcher.PatchSystem;
 
 public enum OpType
 {

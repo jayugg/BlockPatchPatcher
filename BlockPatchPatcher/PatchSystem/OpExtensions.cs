@@ -1,5 +1,3 @@
-using wildercraftberries.PatchSystem;
-
 namespace BlockPatchPatcher.PatchSystem;
 
 public static class OpExtensions
@@ -21,7 +19,7 @@ public static class OpExtensions
         }
         catch
         {
-            BBPCore.Logger.Error($"Failed to apply patch operation {operation} for type {typeof(T)}: {debugInfo}");
+            BbpCore.Logger.Error($"Failed to apply patch operation {operation} for type {typeof(T)}: {debugInfo}");
             return originalValue;
         }
     }
